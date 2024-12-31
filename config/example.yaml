@@ -1,0 +1,59 @@
+# Model Configuration
+model:
+  type: "transformer"  # Options: transformer, random_forest, neural_network
+  params:
+    batch_size: 32
+    learning_rate: 0.001
+    epochs: 10
+    max_sequence_length: 512
+
+# Data Processing
+data:
+  train_test_split: 0.2
+  validation_split: 0.1
+  random_seed: 42
+  max_features: 10000
+  preprocessing:
+    remove_stopwords: true
+    lowercase: true
+    remove_punctuation: true
+    stemming: false
+    lemmatization: true
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 60
+
+# Database Configuration
+database:
+  type: "postgresql"  # Options: postgresql, mongodb
+  host: "localhost"
+  port: 5432
+  name: "data_categorization"
+  user: "username"
+  password: "password"
+
+# Cloud Configuration
+cloud:
+  provider: "aws"  # Options: aws, gcp
+  region: "us-west-2"
+  instance_type: "t3.medium"
+  min_instances: 1
+  max_instances: 3
+
+# Monitoring
+monitoring:
+  log_level: "INFO"
+  metrics_port: 9090
+  enable_tracing: true
+  retention_days: 30
+
+# Security
+security:
+  api_key_required: true
+  jwt_expiration_hours: 24
+  cors_origins: ["http://localhost:3000"]
+  ssl_enabled: true
