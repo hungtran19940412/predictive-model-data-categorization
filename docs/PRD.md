@@ -6,76 +6,86 @@ The AI Data Categorization System is designed to automatically categorize variou
 ## Features
 
 ### Core Features
-- Automatic data categorization
-- Support for multiple data formats (text, CSV, JSON)
-- Real-time predictions
-- Model version control
-- Performance monitoring
+- **Automatic Data Categorization**: Categorizes text and structured data using transformer-based models (PyTorch, Transformers)
+- **Multi-Format Data Support**: Handles text, CSV, and JSON inputs
+- **Real-Time Predictions**: Provides low-latency predictions via RESTful API (FastAPI)
+- **Model Version Control**: Tracks and manages multiple model versions
+- **Performance Monitoring**: Tracks model and system performance using Prometheus and Grafana
 
 ### API Features
-- RESTful API endpoints
-- JWT authentication
-- Rate limiting
-- Feedback collection
+- **RESTful API Endpoints**: Built using FastAPI
+- **JWT Authentication**: Secure API access using JSON Web Tokens
+- **Rate Limiting**: Implements rate limiting using Redis
+- **Feedback Collection**: Collects user feedback for model improvement
 
 ### Monitoring Features
-- Real-time performance metrics
-- System health monitoring
-- Automated alerts
+- **Real-Time Metrics**: Collects performance metrics using Prometheus
+- **System Health Monitoring**: Monitors system health using Grafana
+- **Automated Alerts**: Generates alerts for critical issues
 
 ## Architecture Overview
 
 ### Data Flow
-1. Data Input → Validation → Preprocessing → Feature Engineering → Model Prediction → Result Categorization
-2. Feedback Collection → Model Retraining → Model Versioning → Performance Monitoring
+1. **Data Input**: Accepts raw data (text, CSV, JSON) and validates it using Pandas
+2. **Preprocessing**: Cleans and normalizes text data using SpaCy
+3. **Feature Engineering**: Generates text embeddings and numerical features
+4. **Model Prediction**: Makes predictions using PyTorch-based transformer model
+5. **Feedback Collection**: Collects user feedback via API endpoints
+6. **Model Retraining**: Retrains the model using feedback data
+7. **Monitoring**: Tracks model performance and system health using Prometheus and Grafana
 
 ### Key Components
-- **Data Ingestion Layer**: Handles raw data input
-- **Processing Layer**: Cleans and processes data
-- **Model Layer**: Makes predictions and handles retraining
-- **API Layer**: Provides RESTful endpoints
-- **Monitoring Layer**: Tracks system and model performance
+- **Data Ingestion Layer**: Handles raw data input and validation (Pandas)
+- **Processing Layer**: Cleans and processes data (SpaCy, transformer models)
+- **Model Layer**: Makes predictions and handles retraining (PyTorch)
+- **API Layer**: Provides RESTful endpoints (FastAPI)
+- **Monitoring Layer**: Tracks system and model performance (Prometheus, Grafana)
 
 ## Technical Requirements
 
 ### Infrastructure
-- Python 3.8+
-- Docker and Kubernetes
-- Redis and PostgreSQL
-- Prometheus and Grafana
+- **Programming Language**: Python 3.8+
+- **Web Framework**: FastAPI
+- **Machine Learning**: PyTorch, Transformers
+- **Data Processing**: Pandas, NumPy, SpaCy
+- **Database**: Redis, PostgreSQL
+- **Monitoring**: Prometheus, Grafana
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes
+- **CI/CD**: GitHub Actions
 
 ### Development Environment
-- Git version control
-- Automated testing
-- CI/CD pipeline
-- Containerized deployment
+- **Version Control**: Git-based workflow
+- **Automated Testing**: Unit, integration, and performance tests
+- **CI/CD Pipeline**: Automated builds, tests, and deployments
+- **Containerized Deployment**: Docker and Kubernetes
 
 ### Monitoring and Observability
-- Model performance metrics
-- System health checks
-- Alerting system
+- **Model Performance Metrics**: Accuracy, latency, error rate
+- **System Health Checks**: CPU, memory, disk usage
+- **Alerting System**: Automated alerts for critical issues
 
 ## Development Process
 
 ### Version Control
-- Git-based workflow
-- Feature branch strategy
-- Code reviews
+- **Git Workflow**: Feature branch strategy
+- **Code Reviews**: Pull request reviews
+- **Branch Management**: Main, develop, feature branches
 
 ### Testing
-- Unit tests
-- Integration tests
-- Performance tests
+- **Unit Tests**: Core functionality
+- **Integration Tests**: API endpoints
+- **Performance Tests**: Load testing
 
 ### CI/CD Pipeline
-- Automated builds and tests
-- Container image creation
-- Deployment to staging and production
+- **Automated Builds**: GitHub Actions
+- **Container Image Creation**: Docker
+- **Deployment**: Staging and production environments
 
 ### Monitoring
-- Real-time metrics collection
-- System health checks
-- Automated alerts
+- **Metrics Collection**: Prometheus
+- **System Health Checks**: Grafana
+- **Alerts**: Automated alerts for critical issues
 
 ## Deployment Strategy
 
@@ -85,10 +95,19 @@ The AI Data Categorization System is designed to automatically categorize variou
 3. **Production**: Live environment with auto-scaling
 
 ### Deployment Process
-1. Code changes → Automated tests → Container build → Staging deployment → Production deployment
-2. Monitoring → Alerting → Rollback if necessary
+1. **Code Changes**: Push to feature branch
+2. **Automated Tests**: Run unit, integration, and performance tests
+3. **Container Build**: Create Docker image
+4. **Staging Deployment**: Deploy to staging environment
+5. **Production Deployment**: Deploy to production environment
+6. **Monitoring**: Track performance and system health
 
 ### Monitoring and Maintenance
-- Continuous performance tracking
-- Regular system health checks
-- Automated scaling based on load
+- **Continuous Performance Tracking**: Prometheus metrics
+- **Regular System Health Checks**: Grafana dashboards
+- **Automated Scaling**: Kubernetes auto-scaling
+
+## Cross-References
+- For detailed application flow, refer to [Application Flow Documentation](App-flow.md)
+- For technology stack details, refer to [Tech Stack Documentation](Tech-stack.md)
+- For project structure and key files, refer to [File Structure Documentation](File-structure.md)

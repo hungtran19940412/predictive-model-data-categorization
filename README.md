@@ -6,9 +6,13 @@
 [![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=flat&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
 
-A production-ready system for automatic data categorization using machine learning, deployed on cloud infrastructure with complete CI/CD pipeline and monitoring capabilities.
+A production-ready system for automatic data categorization using machine learning, deployed on cloud infrastructure with a complete CI/CD pipeline and monitoring capabilities. This system supports multiple data formats (text, CSV, JSON) and provides real-time predictions with model version control and performance monitoring.
+
+---
 
 ## Project Structure
+
+The project is organized as follows:
 
 ```plaintext
 predictive-model-data-categorization/
@@ -20,7 +24,7 @@ predictive-model-data-categorization/
 │   ├── processed/
 │   │   ├── training_sets/       # Cleaned data for model training
 │   │   ├── validation_sets/     # Validation data
-│   │   └── test_sets/          # Hold-out test data
+│   │   └── test_sets/           # Hold-out test data
 │   ├── features/
 │   │   ├── text_features/       # Processed text embeddings
 │   │   ├── numeric_features/    # Scaled numerical features
@@ -40,11 +44,11 @@ predictive-model-data-categorization/
 │       └── reports/            # Evaluation reports
 ├── src/
 │   ├── preprocessing/
-│   │   ├── text_cleaner.py     # Text preprocessing
-│   │   ├── data_validator.py   # Data validation
+│   │   ├── text_cleaner.py     # Text preprocessing (using SpaCy)
+│   │   ├── data_validator.py   # Data validation (using Pandas)
 │   │   └── feature_generator.py # Feature engineering
 │   ├── model/
-│   │   ├── architecture.py     # Model definition
+│   │   ├── architecture.py     # Model definition (using PyTorch)
 │   │   ├── trainer.py          # Training logic
 │   │   └── predictor.py        # Prediction service
 │   ├── api/
@@ -53,13 +57,69 @@ predictive-model-data-categorization/
 │   │   │   ├── feedback.py     # Feedback collection
 │   │   │   └── health.py       # Health checks
 │   │   └── middleware/
-│   │       ├── auth.py         # Authentication
-│   │       └── rate_limit.py   # Rate limiting
+│   │       ├── auth.py         # Authentication (JWT)
+│   │       └── rate_limit.py   # Rate limiting (Redis)
 │   └── monitoring/
-│       ├── metrics.py          # Custom metrics
+│       ├── metrics.py          # Custom metrics (Prometheus)
 │       └── alerts.py           # Alert configurations
-└── [rest of structure remains the same]
+├── config/                     # Configuration files
+├── deployment/                 # Deployment configurations (Docker, Kubernetes)
+├── tests/                      # Test cases
+├── monitoring/                 # Monitoring configurations (Prometheus, Grafana)
+└── docs/                       # Project documentation
 ```
+
+---
+
+## Key Features
+
+### Core Features
+- **Automatic Data Categorization**: Categorizes text and structured data using transformer-based models.
+- **Multi-Format Data Support**: Handles text, CSV, and JSON inputs.
+- **Real-Time Predictions**: Provides low-latency predictions via RESTful API.
+- **Model Version Control**: Tracks and manages multiple model versions.
+- **Performance Monitoring**: Tracks model and system performance using Prometheus and Grafana.
+
+### Development Features
+- **Automated Testing**: Unit, integration, and performance tests.
+- **CI/CD Pipeline**: Automated builds, tests, and deployments using GitHub Actions.
+- **Containerized Deployment**: Deployed using Docker and orchestrated with Kubernetes.
+- **Monitoring and Alerting**: Real-time metrics and alerts for system health and model performance.
+
+---
+
+## Technology Stack
+
+### Core Technologies
+- **Programming Language**: Python 3.8+
+- **Web Framework**: FastAPI
+- **Machine Learning**: PyTorch, Transformers
+- **Data Processing**: Pandas, NumPy, SpaCy
+- **Database**: Redis (caching), PostgreSQL (metadata storage)
+- **Monitoring**: Prometheus, Grafana
+- **Containerization**: Docker
+- **Orchestration**: Kubernetes
+- **CI/CD**: GitHub Actions
+
+For more details, refer to the [Tech Stack Documentation](Tech-stack.md).
+
+---
+
+## Application Flow
+
+The system follows a structured flow for data processing, model prediction, and feedback collection:
+
+1. **Data Input**: Accepts raw data (text, CSV, JSON) and validates it.
+2. **Preprocessing**: Cleans and normalizes text data using SpaCy.
+3. **Feature Engineering**: Generates text embeddings and numerical features.
+4. **Model Prediction**: Makes predictions using the current model version.
+5. **Feedback Collection**: Collects user feedback for model improvement.
+6. **Model Retraining**: Retrains the model using feedback data.
+7. **Monitoring**: Tracks model performance and system health using Prometheus and Grafana.
+
+For a detailed flowchart, refer to the [Application Flow Documentation](App-flow.md).
+
+---
 
 ## Configuration Examples
 
@@ -137,6 +197,8 @@ logging:
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 ```
 
+---
+
 ## API Routes
 
 ### Prediction Endpoint
@@ -190,65 +252,9 @@ async def submit_feedback(
     return {"status": "success", "feedback_id": feedback_id}
 ```
 
-## Monitoring Metrics
+---
 
-### Model Performance Metrics
-```python
-class ModelMetrics:
-    def __init__(self):
-        self.prediction_counter = Counter(
-            'model_predictions_total',
-            'Total number of predictions made'
-        )
-        self.prediction_latency = Histogram(
-            'model_prediction_latency_seconds',
-            'Time taken for predictions',
-            buckets=(0.1, 0.5, 1.0, 2.0, 5.0)
-        )
-        self.accuracy_gauge = Gauge(
-            'model_accuracy',
-            'Current model accuracy'
-        )
-        self.error_counter = Counter(
-            'model_errors_total',
-            'Total number of model errors'
-        )
-
-    async def record_prediction(self, latency, success):
-        self.prediction_counter.inc()
-        self.prediction_latency.observe(latency)
-        if not success:
-            self.error_counter.inc()
-```
-
-### System Metrics
-```python
-class SystemMetrics:
-    def __init__(self):
-        self.cpu_usage = Gauge(
-            'system_cpu_usage_percent',
-            'CPU usage percentage'
-        )
-        self.memory_usage = Gauge(
-            'system_memory_usage_bytes',
-            'Memory usage in bytes'
-        )
-        self.disk_usage = Gauge(
-            'system_disk_usage_percent',
-            'Disk usage percentage'
-        )
-        self.request_queue = Gauge(
-            'system_request_queue_size',
-            'Number of requests in queue'
-        )
-
-    async def update_metrics(self):
-        self.cpu_usage.set(psutil.cpu_percent())
-        self.memory_usage.set(psutil.virtual_memory().used)
-        self.disk_usage.set(psutil.disk_usage('/').percent)
-```
-
-## Deployment Configuration
+## Deployment
 
 ### Docker Compose
 ```yaml
@@ -290,50 +296,19 @@ volumes:
   prometheus_data:
 ```
 
-## Security Configurations
-
-### Authentication
-```python
-# src/api/middleware/auth.py
-class AuthConfig:
-    SECRET_KEY = "your-secret-key"
-    ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30
-    
-    @staticmethod
-    def create_access_token(data: dict):
-        to_encode = data.copy()
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        to_encode.update({"exp": expire})
-        return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-```
-
-### Rate Limiting
-```python
-# src/api/middleware/rate_limit.py
-class RateLimiter:
-    def __init__(self, requests_per_minute: int = 60):
-        self.requests_per_minute = requests_per_minute
-        self.redis = Redis(host='localhost', port=6379)
-    
-    async def check_rate_limit(self, user_id: str) -> bool:
-        current = await self.redis.incr(f"rate_limit:{user_id}")
-        if current == 1:
-            await self.redis.expire(f"rate_limit:{user_id}", 60)
-        return current <= self.requests_per_minute
-```
-
-[Previous sections for License remain unchanged]
+---
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+---
 
 ## License
 

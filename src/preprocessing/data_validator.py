@@ -1,56 +1,80 @@
-import re
 import logging
-from typing import Dict, Any, Optional
 import pandas as pd
-from pydantic import BaseModel, ValidationError
-
-class DataSchema(BaseModel):
-    text: str
-    source: str
-    timestamp: str
-    metadata: Optional[Dict[str, Any]] = None
+from typing import Dict, Any, Optional
+import json
+from jsonschema import validate, ValidationError
 
 class DataValidator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.info("Data validator initialized")
 
-    def validate_single_record(self, record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """Validate a single data record"""
+    def validate_csv(self, file_path: str, schema: Dict[str, Any]) -> Optional[pd.DataFrame]:
+        """Validate CSV file against schema"""
         try:
-            validated = DataSchema(**record)
-            return validated.dict()
-        except ValidationError as e:
-            self.logger.error(f"Validation error: {e}")
+            df = pd.read_csv(file_path)
+            self._validate_dataframe(df, schema)
+            return df
+        except Exception as e:
+            self.logger.error(f"CSV validation error: {e}")
             return None
 
-    def validate_batch(self, records: list) -> list:
-        """Validate a batch of records"""
-        return [self.validate_single_record(record) for record in records if record is not None]
+    def validate_json(self, file_path: str, schema: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Validate JSON file against schema"""
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+            validate(instance=data, schema=schema)
+            return data
+        except (ValidationError, json.JSONDecodeError) as e:
+            self.logger.error(f"JSON validation error: {e}")
+            return None
 
-    def check_data_quality(self, data: pd.DataFrame) -> Dict[str, Any]:
-        """Perform data quality checks"""
-        quality_report = {
-            'total_records': len(data),
-            'missing_values': data.isnull().sum().to_dict(),
-            'duplicates': data.duplicated().sum(),
-            'text_length_stats': {
-                'min': data['text'].str.len().min(),
-                'max': data['text'].str.len().max(),
-                'mean': data['text'].str.len().mean()
-            }
-        }
-        return quality_report
+    def _validate_dataframe(self, df: pd.DataFrame, schema: Dict[str, Any]) -> bool:
+        """Validate DataFrame against schema"""
+        try:
+            # Check required columns
+            for col in schema.get('required_columns', []):
+                if col not in df.columns:
+                    raise ValueError(f"Missing required column: {col}")
+            
+            # Check data types
+            for col, dtype in schema.get('column_types', {}).items():
+                if col in df.columns and not pd.api.types.is_dtype(df[col].dtype, dtype):
+                    raise ValueError(f"Invalid data type for column {col}. Expected {dtype}")
+            
+            # Check for null values in required columns
+            for col in schema.get('non_null_columns', []):
+                if df[col].isnull().any():
+                    raise ValueError(f"Null values found in column {col}")
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"DataFrame validation error: {e}")
+            raise
 
 if __name__ == "__main__":
     import sys
     logging.basicConfig(level=logging.INFO)
     
     validator = DataValidator()
-    sample_record = {
-        'text': 'Sample text',
-        'source': 'test',
-        'timestamp': '2024-01-01T00:00:00Z'
+    
+    # Example CSV validation
+    csv_schema = {
+        'required_columns': ['id', 'name', 'age'],
+        'column_types': {'age': 'int64'},
+        'non_null_columns': ['id', 'name']
     }
-    validated = validator.validate_single_record(sample_record)
-    print(f"Validated record: {validated}")
+    
+    # Example JSON validation
+    json_schema = {
+        "type": "object",
+        "properties": {
+            "id": {"type": "number"},
+            "name": {"type": "string"},
+            "age": {"type": "number"}
+        },
+        "required": ["id", "name"]
+    }
+    
+    print("Data validator initialized successfully")
